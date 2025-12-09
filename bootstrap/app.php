@@ -15,5 +15,41 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Handle JWT authentication exceptions
+        $exceptions->render(function (Tymon\JWTAuth\Exceptions\TokenExpiredException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Login please',
+                ], 401);
+            }
+        });
+
+        $exceptions->render(function (Tymon\JWTAuth\Exceptions\TokenInvalidException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Login please',
+                ], 401);
+            }
+        });
+
+        $exceptions->render(function (Tymon\JWTAuth\Exceptions\JWTException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Login please',
+                ], 401);
+            }
+        });
+
+        // Handle general authentication exceptions - return JSON instead of redirect
+        $exceptions->render(function (Illuminate\Auth\AuthenticationException $e, $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Login please',
+                ], 401);
+            }
+        });
     })->create();
