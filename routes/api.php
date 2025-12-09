@@ -24,5 +24,3 @@ Route::middleware('auth:api')->group(function () {
     // Get menus for authenticated user based on their user type
     Route::get('/menus/user/my-menus', [MenuController::class, 'getUserMenus']);
 });
-
-

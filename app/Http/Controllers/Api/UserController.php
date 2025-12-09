@@ -57,7 +57,7 @@ class UserController extends UniversalController
      * Store a newly created resource in storage.
      * Only User type 1 can create users.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request, $modelClass = null): JsonResponse
     {
         try {
             // Get authenticated user

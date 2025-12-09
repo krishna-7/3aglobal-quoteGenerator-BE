@@ -58,7 +58,7 @@ class MenuController extends UniversalController
      * Display a listing of the resource.
      * Only admin (user_type_id = 1) can access.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request, $modelClass = null): JsonResponse
     {
         try {
             // Get authenticated user

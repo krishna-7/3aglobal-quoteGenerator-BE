@@ -153,7 +153,6 @@ class PaymentLinkController extends UniversalController
     {
         try {
             $paymentLink = PaymentLink::findOrFail($id);
-
             return response()->json([
                 'success' => true,
                 'message' => 'Payment link retrieved successfully',

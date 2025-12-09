@@ -120,7 +120,7 @@ class MenuSeeder extends Seeder
             'name' => 'Payment Links',
             'icon' => 'link',
             'route' => 'payment-links',
-            'path' => '/settings/payment-links',
+            'path' => '/payment-links',
             'parent_id' => $quotesMenu->id,
             'order' => 3,
             'is_active' => true,

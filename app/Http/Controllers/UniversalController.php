@@ -99,7 +99,7 @@ abstract class UniversalController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request, $modelClass = null): JsonResponse
     {
         try {
             $query = $this->modelClass::query();
