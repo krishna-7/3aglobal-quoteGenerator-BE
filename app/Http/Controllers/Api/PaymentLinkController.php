@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\UniversalController;
-use App\Http\Requests\StorePaymentLinkRequest;
+use App\Http\Requests\PaymentLinkStoreRequest;
 use App\Http\Requests\UpdatePaymentLinkRequest;
 use App\Models\PaymentLink;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Http\Services\Payment\CcAvenueService;
 
 class PaymentLinkController extends UniversalController
 {
@@ -21,7 +22,7 @@ class PaymentLinkController extends UniversalController
     /**
      * Set the request classes for validation.
      */
-    protected ?string $storeRequestClass = StorePaymentLinkRequest::class;
+    protected ?string $storeRequestClass = PaymentLinkStoreRequest::class;
     protected ?string $updateRequestClass = UpdatePaymentLinkRequest::class;
 
     /**
@@ -88,7 +89,7 @@ class PaymentLinkController extends UniversalController
             // Apply sorting
             $sortBy = $request->get('sort_by', 'id');
             $sortOrder = $request->get('sort_order', 'desc');
-            
+
             if (in_array($sortBy, $this->sortFields)) {
                 $query->orderBy($sortBy, $sortOrder);
             }
@@ -117,16 +118,22 @@ class PaymentLinkController extends UniversalController
         }
     }
 
+    protected CcAvenueService $ccAvenueService;
+
+    public function __construct(CcAvenueService $ccAvenueService)
+    {
+        $this->ccAvenueService = $ccAvenueService;
+    }
+
     /**
      * Store a newly created payment link in storage.
      */
     public function store(Request $request): JsonResponse
     {
         // Add created_by from authenticated user
-        if (Auth::check()) {
-            $request->merge(['created_by' => Auth::id()]);
-        }
 
+        $request->merge(['transaction_type_id' => 1]);
+        $this->ccAvenueService->generatePaymentUrl($request->all());
         // Call parent store method
         return parent::store($request);
     }

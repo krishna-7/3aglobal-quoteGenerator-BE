@@ -16,6 +16,7 @@ class PaymentLink extends Model
      */
     protected $fillable = [
         'customer_name',
+        'payment_mode_id',
         'reference',
         'reference_1',
         'delivery_type',
@@ -48,4 +49,9 @@ class PaymentLink extends Model
         'invoice_valid_from' => 'date',
         'deleted_at' => 'datetime',
     ];
+
+    public function paymentMode()
+    {
+        return $this->belongsTo(PaymentMode::class);
+    }
 }

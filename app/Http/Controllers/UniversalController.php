@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
@@ -102,7 +103,7 @@ abstract class UniversalController extends Controller
     public function index(Request $request, $modelClass = null): JsonResponse
     {
         try {
-            $query = $this->modelClass::query();
+            $query = $modelClass ?? $this->modelClass::query();
 
             // Eager load relationships
             if (!empty($this->with)) {
@@ -140,7 +141,7 @@ abstract class UniversalController extends Controller
             // Apply sorting
             $sortBy = $request->get('sort_by', 'id');
             $sortOrder = $request->get('sort_order', 'desc');
-            
+
             if (empty($this->sortFields) || in_array($sortBy, $this->sortFields)) {
                 $query->orderBy($sortBy, $sortOrder);
             }
@@ -182,7 +183,7 @@ abstract class UniversalController extends Controller
                 // Create FormRequest instance to get rules
                 $formRequest = app($this->storeRequestClass);
                 $rules = method_exists($formRequest, 'rules') ? $formRequest->rules() : [];
-                
+
                 // Validate using Validator facade
                 $validator = Validator::make($request->all(), $rules);
                 if ($validator->fails()) {
@@ -192,12 +193,14 @@ abstract class UniversalController extends Controller
                         'errors' => $validator->errors(),
                     ], 422);
                 }
-                
+
                 $validated = $validator->validated();
             } else {
                 $validated = $request->all();
             }
-
+            if (Auth::check()) {
+                $validated['created_by'] = Auth::id();
+            }
             // Create the model instance
             $data = $this->modelClass::create($validated);
 
@@ -277,7 +280,7 @@ abstract class UniversalController extends Controller
                 // Create FormRequest instance to get rules
                 $formRequest = app($this->updateRequestClass);
                 $rules = method_exists($formRequest, 'rules') ? $formRequest->rules() : [];
-                
+
                 // Validate using Validator facade
                 $validator = Validator::make($request->all(), $rules);
                 if ($validator->fails()) {
@@ -287,7 +290,7 @@ abstract class UniversalController extends Controller
                         'errors' => $validator->errors(),
                     ], 422);
                 }
-                
+
                 $validated = $validator->validated();
             } else {
                 $validated = $request->all();
