@@ -34,11 +34,23 @@ class CcAvenueService
     public function generatePaymentUrl($request)
     {
         $merchant_data = $this->merchantDataCreation($request);
-        dd($merchant_data);
-        $response = Http::post('https://secure.ccavenue.ae/transaction/transaction.do?command=initiateTransaction', [
-            'encRequest' => $merchant_data,
+        $response = Http::post('https://login.ccavenue.ae/apis/servlet/DoWebTrans', [
+            'enc_request' => $merchant_data,
             'access_code' => $this->accessCode,
+            'request_type' => 'JSON',
+            'response_type' => 'JSON',
+            'command' => 'generateQuickInvoice',
+            'version' => '1.1',
+            'customer_name' => 'jesvin',
+            'customer_email_id' => 'jesvin@logiclabz.co.in',
+            'customer_email_subject' => 'Invoice',
+            'customer_mobile_number' => '9876543210',
+            'valid_for' => '2',
+            'valid_type' => 'days',
+            'Currency' => 'AED',
+            'amount' => '500.00',
+            'bill_delivery_type' => 'NONE',
         ]);
-        exit;
+        dd($response->json());
     }
 }
